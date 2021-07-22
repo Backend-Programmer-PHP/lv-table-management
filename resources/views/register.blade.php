@@ -17,7 +17,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <link href="//fonts.googleapis.com/css?family=Monoton" rel="stylesheet">
 <!-- /fonts -->
 <!-- css -->
-<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all" />
+<link rel="stylesheet" href="css/font-awesome.css"> <!-- Font-Awesome-Icons-CSS -->
 <link href="css/style.css" rel='stylesheet' type='text/css' media="all" />
 <!-- /css -->
 </head>
@@ -29,25 +29,40 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 		<p class="agileits2">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
 	</div>
 	<div class="content-agile2">
-		<form action="#" method="post">
+		<form class="form" action="{{route('register.submit')}}" method="post">
+			@csrf
 			<div class="form-control w3layouts"> 
-				<input type="text" id="firstname" name="firstname" placeholder="First Name" title="Please enter your First Name" required="">
+				<input type="text" id="firstname" name="name" placeholder="Name" title="Please enter your Name" required="required" value="{{old('name')}}">
+				@error('name')
+                    <span class="text-danger">{{$message}}</span>
+                @enderror
 			</div>
 
 			<div class="form-control w3layouts">	
-				<input type="email" id="email" name="email" placeholder="mail@example.com" title="Please enter a valid email" required="">
+				<input type="email" id="email" name="email" placeholder="mail@example.com" title="Please enter a valid email" required="required" value="{{old('email')}}">
+				@error('email')
+                    <span class="text-danger">{{$message}}</span>
+                @enderror			
 			</div>
 
 			<div class="form-control agileinfo">	
-				<input type="password" class="lock" name="password" placeholder="Password" id="password1" required="">
+				<input type="password" class="lock" name="password" placeholder="Password" id="password1" required="required"  value="{{old('password')}}">
+			 	@error('password')
+                    <span class="text-danger">{{$message}}</span>
+                @enderror
 			</div>	
 
 			<div class="form-control agileinfo">	
-				<input type="password" class="lock" name="confirm-password" placeholder="Confirm Password" id="password2" required="">
+				<input type="password" class="lock" name="password_confirmation" placeholder="Confirm Password" id="password2" required="required" value="{{old('password_confirmation')}}">
+				@error('password_confirmation')
+                    <span class="text-danger">{{$message}}</span>
+                 @enderror
 			</div>			
 			
 			<input type="submit" class="register" value="Register">
 		</form>
+
+
 		<script type="text/javascript">
 			window.onload = function () {
 				document.getElementById("password1").onchange = validatePassword;

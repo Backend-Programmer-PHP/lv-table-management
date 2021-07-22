@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use App\User;
 class UserController extends Controller
 {
     //
@@ -11,55 +13,59 @@ class UserController extends Controller
     {
         return view('register');
     }
-     //Xu ly du lieu register
-     public function userRegisterSubmit(Request $request)
-     {
-         $this->validate($request, [
-             'name' => 'string|required|min:2',
-             'email' => 'string|required|unique:users,email',
-             'password' => 'required|min:6|confirmed',
-         ]);
-         $data = $request->all();
-         // dd($data);
-         $check = $this->create($data);
-         $check['status'] = 'inactive';
-         $check->save();
-         // dd($check);
-         Session::put('user', $data['email']);
-         if ($check) {
-             request()->session()->flash('success', 'Successfully registered!Please confrfirm your email!');
-             $userActivation = new UserActivation;
-             $activation = new ActivationService($userActivation);
-             $activation->sendActivationMail($check);
-             $details = [
-                 'title' => 'New user registed',
-                 'actionURL' => route('users.index'),
-                 'fas' => 'fa-file-alt'
-             ];
-             $users = User::where('role', 'admin')->first();
-             Notification::send($users, new StatusNotification($details));
-             return redirect()->route('index');
-         } else {
-             request()->session()->flash('error', 'Please try again!');
-             return back();
-         }
-     }
-      //Xu ly user logout
-    public function userLogout()
+    public function login()
     {
-        Session::forget('user');
-        Auth::logout();
-        request()->session()->flash('success', 'Logout successfully');
-        return back();
+        return view('login');
     }
-    //Xu ly dang ky user
-    public function create(array $data)
+  
+    //Duyệt đăng nhập
+    public function storeLogin(Request $request)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'status' => 'active'
+        $data = $request->all();
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {         
+            request()->session()->flash('success', 'Successfully login'); 
+            echo "<div class='content' style='font-weight: bold;text-align: center;'>
+            <div class='title m-b-md' style='font-size: 50px;'>
+                 Laravel
+            </div>
+
+            <div class='links'>
+               
+                <a href='http://localhost:70/Account/public/logout' style='text-decoration: none;'>Logout</a>
+            </div>
+        </div>";
+           
+        } else {
+            request()->session()->flash('error', 'Invalid email and password pleas try again!');
+            return back();
+        }
+    }
+    // Duyệt đăng ký
+    public function storeRegister(Request $request)
+    {
+          
+        $this->validate($request, [
+            'name' => 'string|required',
+            'email' => 'string|required',
+            'password' => 'required|min:8|confirmed',
         ]);
-    }
+        $data = $request->all();
+        $data['password'] = bcrypt($request->password);
+        $status = User::create($data);
+        if ($status) {
+            request()->session()->flash('success', 'Successfully registered!Please confrfirm your email!');
+            return redirect('/login');
+        } else {
+            request()->session()->flash('error', 'Please try again!');
+            return back();
+        }
+         
+      }
+      //Đăng xuất
+      public function Logout()
+      {
+          Auth::logout();
+          return back();
+      }
+     
 }

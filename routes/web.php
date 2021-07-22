@@ -17,7 +17,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::get('/register', 'UserController@index');
 Auth::routes();
+// Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/home', 'HomeController@index')->name('home');
+// Đăng ký 
+Route::get('/register', 'UserController@index')->name('register');
+Route::post('/register', 'UserController@storeRegister')->name('register.submit');
+
+
+// Đăng nhập
+Route::post('/login', 'UserController@storeLogin')->name('login.submit');
+Route::get('/login', 'UserController@login')->name('login');
+
+//Đăng xuất
+Route::get('/logout', 'UserController@Logout')->name('logout');
