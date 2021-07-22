@@ -21,7 +21,7 @@ Auth::routes();
 // Route::get('/home', 'HomeController@index')->name('home');
 
 // Đăng ký 
-Route::get('/register', 'UserController@index')->name('register');
+Route::get('/register', 'UserController@register')->name('register');
 Route::post('/register', 'UserController@storeRegister')->name('register.submit');
 
 
@@ -31,3 +31,7 @@ Route::get('/login', 'UserController@login')->name('login');
 
 //Đăng xuất
 Route::get('/logout', 'UserController@Logout')->name('logout');
+
+// Xử lý dữ liệu bảng 
+// Users: 
+Route::resource('users' , 'UserController')->middleware('checklogin');
